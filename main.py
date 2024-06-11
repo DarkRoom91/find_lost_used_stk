@@ -1,9 +1,19 @@
 import pandas as pd
 import openpyxl
+used_seri_xlsx = 'used.xlsx'  # file excel xlsx
+used_seri_sheet = 'Sheet2'  # sheet contain used seri
+used_seri_col = 'B'  # column series
+used_seri_col_name = 'so_stk'  # column name of used series
 
+used_series_star_end_only = [
+    ("AB. 0", 256041, 257500),
+    ("AC", 4122001, 4122101),
+    ("AB ", 5016501, 5018500)
+]
 # ---------input số series sổ đã sử dụng từ file excel xuất từ phần mềm
-data_series_uesed_file = pd.read_excel('used.xlsx', sheet_name="Sheet2", usecols="B")
-series_used_file = list(data_series_uesed_file['so_stk'])  # usecols is used serials
+data_series_uesed_file = pd.read_excel(used_seri_xlsx, sheet_name=used_seri_sheet, usecols=used_seri_col)
+series_used_file = list(data_series_uesed_file[used_seri_col_name])
+
 
 class SeriesStk:
     def __init__(self, first2, start, end):
@@ -12,15 +22,13 @@ class SeriesStk:
         self.end = end
 
 
-start_end_used_seri = [
-    SeriesStk(first2="AB. 0", start=256041, end=257500),
-    SeriesStk(first2="AC", start=4122001, end=4122101),
-    SeriesStk(first2="AB ", start=5016501, end=5018500)
-]
+used_seri = []
+for i in range(0, len(used_series_star_end_only)):
+    used_seri.append(SeriesStk(first2=used_series_star_end_only[i][0] ,start=used_series_star_end_only[i][1], end=used_series_star_end_only[i][2]))
 
 
 def make_series(start_end):
-    series_stk= []
+    series_stk = []
     for seri in start_end:
         amount_seri = seri.end - seri.start +1
         for i in range(amount_seri):
@@ -53,8 +61,8 @@ def write_to_excel(sheet_name, series_name):
     workbook_excel.close()
 
 
-seri_used_start_end = make_series(start_end_used_seri)
-so_hong = compare_series(seri_used_start_end, series_used_file)
+seri_used_start_end_all = make_series(used_seri)
+so_hong = compare_series(seri_used_start_end_all, series_used_file)
 
 
 write_to_excel(sheet_name='Sheet1', series_name=so_hong)
